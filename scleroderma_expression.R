@@ -32,8 +32,7 @@ library(gage)
 library(gageData)
 
 ## ## POWER CALCULATION
-## library(MASS)
-## library(PROPER)
+library(PROPER)
 
 ## OPTIONS
 options(repr.matrix.max.rows = 100)
@@ -82,18 +81,6 @@ condition <- factor(c(rep('case',18),rep('ctrl',7)))
 ## SAMPLE SITE
 site <- factor(c(rep(c('arm', 'back'),9),
                  'arm', 'arm', 'back', 'back', 'arm', 'arm', 'back'))
-
-## ## NUMBER OF MRNA READS (BACK)
-## sampleRNA <- as.character(c(65069646, eval(45438576+36268612),
-##                   67917276, 52382324,
-##                   eval(44047332+38760700), 67477960,
-##                   64344432, 62788060,
-##                   64299320, 55418906,
-##                   eval(43815618+37409158), 58289942,
-##                   84023154, 56555144,
-##                   66143818, 63706182,
-##                   56968454, 58639158,
-##                   eval(43143926+32313602), 67608242, 61565754, 66871166, 58409290, 72226420, 58219818))
 
 ## GENDER
 gender <- factor(c(rep('F',16), rep('M',2),
@@ -246,84 +233,49 @@ if (file.exists(path.out.dir)){
     dir.create(file.path(path.out.dir), showWarnings = TRUE)
 }
 
-## ## PROPER POWER CALCULATIONS
-## sim.opts.Cheung <- RNAseq.SimOptions.2grp(ngenes = 25000,
-##                                           p.DE=0.05, lOD="cheung",
-##                                           lBaselineExpr="cheung",
-##                                           lfc=2)
+## PROPER POWER CALCULATIONS
+sim.opts.Cheung <- RNAseq.SimOptions.2grp(ngenes = 25000,
+                                          p.DE=0.05, lOD="cheung",
+                                          lBaselineExpr="cheung",
+                                          lfc=2)
 
-## simres = runSims(Nreps = c(3, 4, 6, 7, 14,7),
-##                  Nreps2 = c(6, 6, 8, 6, 6,7),
-##                  sim.opts=sim.opts.Cheung,
-##                  DEmethod="DESeq2", nsims=20)
+simres = runSims(Nreps = c(3, 4, 6, 7, 14,7),
+                 Nreps2 = c(6, 6, 8, 6, 6,7),
+                 sim.opts=sim.opts.Cheung,
+                 DEmethod="DESeq2", nsims=20)
 
-## powers = comparePower(simres, alpha.type="fdr", alpha.nominal=0.05,
-##                       stratify.by="expr", strata.filtered=1,
-##                       target.by = 'lfc')
-## summaryPower(powers)
-
-
-## power.table <- as.data.frame(summaryPower(powers))
-## power.table$`Actual FDR` <- formatC(power.table$`Actual FDR`, format = "g", digits = 2)
-## power.table$`Marginal power` <- formatC(power.table$`Marginal power`, format = "g", digits = 2)
-## power.table$FDC <- formatC(power.table$FDR, format = "g", digits = 2)
-
-## power.table
-
-## out.table = paste0(tables.out.dir,"table.powers.tex")
-## table.head <- "\\begin{longtable}{ C{2em} C{2em} C{6.5em} C{6.5em} C{6.5em} C{6.5em} C{6.5em} C{2.2em} }"
-## table.caption <- paste0("\\caption[Summary of the power calculations performed with \\proper{}]{\\textbf{Summary of the power calculations performed with \\proper{}.}}")
-## table.label <- paste0("\\label{tab:summary.power}\\\\")
-## ##
-## write.table(table.head, file=out.table, row.names=FALSE, col.names=FALSE, quote=FALSE, sep=" & ", eol=" \n")
-## write.table(table.caption, file=out.table, row.names=FALSE, col.names=FALSE, quote=FALSE, append=TRUE,sep=" & ", eol=" \n")
-## write.table(table.label, file=out.table, row.names=FALSE, col.names=FALSE, quote=FALSE, append=TRUE,sep=" & ", eol=" \n")
-## ##
-## write.table("\\toprule", file=out.table, row.names=FALSE, col.names=FALSE, quote=FALSE, append=TRUE, sep=" & ", eol=" \n")
-## write.table(paste0("\\rowcolor{gray!25} ", paste(names(power.table),collapse=" & ")),
-##             file=out.table, row.names=FALSE, col.names=FALSE, quote=FALSE, append=TRUE, sep=" & ", eol=" \\\\\n")
-## write.table("\\midrule", file=out.table, row.names=FALSE, col.names=FALSE, quote=FALSE, append=TRUE, sep=" & ", eol=" \n")
-## write.table(power.table, file=out.table, row.names=FALSE, col.names=FALSE, quote=FALSE, append=TRUE, sep=" & ", eol=" \\\\\n")
-## write.table("\\bottomrule\n\\end{longtable}", file=out.table, row.names=FALSE, col.names=FALSE, quote=FALSE, append=TRUE, sep=" & ", eol=" \n")
-
-## pdf(paste0(figures.out.dir,'plot.powers.pdf'), paper='a4r', onefile=FALSE)
-## plotPower(powers)
-## dev.off()
-
-## pdf(paste0(figures.out.dir,'plot.TD.pdf'), paper='a4', onefile=FALSE)
-## plotPowerTD(powers)
-## dev.off()
-
-## pdf(paste0(figures.out.dir,'plot.FD.Cost.pdf'), paper='a4', onefile=FALSE)
-## plotFDcost(powers)
-## dev.off()
-
-## pdf(paste0(figures.out.dir,'plot.ALL.powers.pdf'), paper='a4r', onefile=FALSE)
-## par(mfrow=c(2,3))
-## plotAll(powers)
-## dev.off()
-
-## ## MASS POWER CALCULATIONS
-## source("power_calculations/rs_simulations.r")
-
-## read.table("power_calculations/bottomly_count_table.txt", sep = "\t", header=T) -> rawdata
-## rownames(rawdata) <- rawdata$gene
-## rawdata <- as.matrix(rawdata[,-1])
-## head(rawdata)
-
-## condition = c(rep("A", 10),rep("B", 11))
-## print(condition)
-
-## #condition = c(rep("A", 7), rep("B", 3), rep("A", 7), rep("B", 3)) 
-## estimate_params(rawdata=rawdata, condition=condition, designtype="one factor") -> params
-## save(params, file="bottomly_params.Rdata")
-
-## Results = RS_simulation(sims=5, params=params, budget=3000, designtype = "one factor", nmax = 20, nmin = 5, program="DESeq2")
-## pdf(paste0(figures.out.dir,'plot.MASS.powers.pdf'), paper='a4', onefile=FALSE)
-## plot(rownames(Results),rowMeans(Results, na.rm=TRUE), main="DESeq simulations on Bottomly Dataset", xlab = "number of replicates", ylab = "Power")
-## dev.off()
+powers = comparePower(simres, alpha.type="fdr", alpha.nominal=0.05,
+                      stratify.by="expr", strata.filtered=1,
+                      target.by = 'lfc')
+summaryPower(powers)
 
 
+power.table <- as.data.frame(summaryPower(powers))
+power.table$`Actual FDR` <- formatC(power.table$`Actual FDR`, format = "g", digits = 2)
+power.table$`Marginal power` <- formatC(power.table$`Marginal power`, format = "g", digits = 2)
+power.table$FDC <- formatC(power.table$FDR, format = "g", digits = 2)
+
+power.table
+
+out.table = paste0(tables.out.dir,"table.powers.tex")
+table.head <- "\\begin{longtable}{ C{2em} C{2em} C{6.5em} C{6.5em} C{6.5em} C{6.5em} C{6.5em} C{2.2em} }"
+table.caption <- paste0("\\caption[Summary of the power calculations performed with \\proper{}]{\\textbf{Summary of the power calculations performed with \\proper{}.}}")
+table.label <- paste0("\\label{tab:summary.power}\\\\")
+
+write.table(table.head, file=out.table, row.names=FALSE, col.names=FALSE, quote=FALSE, sep=" & ", eol=" \n")
+write.table(table.caption, file=out.table, row.names=FALSE, col.names=FALSE, quote=FALSE, append=TRUE,sep=" & ", eol=" \n")
+write.table(table.label, file=out.table, row.names=FALSE, col.names=FALSE, quote=FALSE, append=TRUE,sep=" & ", eol=" \n")
+
+write.table("\\toprule", file=out.table, row.names=FALSE, col.names=FALSE, quote=FALSE, append=TRUE, sep=" & ", eol=" \n")
+write.table(paste0("\\rowcolor{gray!25} ", paste(names(power.table),collapse=" & ")),
+            file=out.table, row.names=FALSE, col.names=FALSE, quote=FALSE, append=TRUE, sep=" & ", eol=" \\\\\n")
+write.table("\\midrule", file=out.table, row.names=FALSE, col.names=FALSE, quote=FALSE, append=TRUE, sep=" & ", eol=" \n")
+write.table(power.table, file=out.table, row.names=FALSE, col.names=FALSE, quote=FALSE, append=TRUE, sep=" & ", eol=" \\\\\n")
+write.table("\\bottomrule\n\\end{longtable}", file=out.table, row.names=FALSE, col.names=FALSE, quote=FALSE, append=TRUE, sep=" & ", eol=" \n")
+
+pdf(paste0(figures.out.dir,'plot.powers.pdf'), paper='a4r', onefile=FALSE)
+plotPower(powers)
+dev.off()
 
 ## ----------------------------- REMOVE GENDER/SITE BIAS ("SANITIZE")????? USE CONTROL MALE & FEMALES
 sanitize <- the.data[, colnames(the.data) %in% c(ctrl_arm,ctrl_back)]
@@ -526,30 +478,6 @@ latex.columns <- "\\begin{tabular}{ L{3.5em} R{3em} R{3.5em} R{3.5em} R{3.5em} R
 below.toprule <- c("\\rowcolor{gray!25} & \\multicolumn{9}{ c }{\\textbf{\\# of singnificant genes in each comparison}} \\\\\\hhline{>{\\arrayrulecolor{gray!25}}->{\\arrayrulecolor{black}}---------}","\\rowcolor{gray!25} &&&&&&&&&\\\\")
 write.latex.table(lfc.table, latex.columns, below.toprule, paste0(tables.out.dir,"table.fc.cutoff",".tex"))
 
-## test <- lfc.table[which(as.numeric(row.names(lfc.table)) >= 1),]
-## test <- melt(test, id.vars='FC')
-## pdf(paste0(figures.out.dir,"plot.lfc.filtering.pdf"),paper='a4r',width=0, height=0,onefile=FALSE)
-## ggplot(data=test, aes(x=FC,y=value,color=variable)) +
-## geom_line(aes(group=variable)) +
-## theme_bw() +
-## scale_y_continuous(breaks = seq(0,300,5)) +
-## xlab("Fold Change Cutoff") +
-## ylab("Number of significant genes") +
-## theme(panel.grid.major = element_blank(),
-##       panel.grid.minor = element_blank(),
-##       legend.position = "right",
-##       legend.justification = "top",
-##       legend.key = element_rect(fill = "gray", size=0.1),
-##       legend.text = element_text(size = 6),
-##       legend.title = element_text(size = 7,face = 'bold'),
-##       legend.key.size = unit(0.25, "cm"),
-##       legend.margin = margin(t = 0, unit='cm'),
-##       axis.title = element_text(size=6),
-##       axis.text = element_text(size=5),
-##       plot.title = element_text(size=7, hjust = 0.5))
-## dev.off()
-                       
-
 ## GET THE DIFFERENTIALLY EXPRESSED GENES FROM THE DDS CREATED (USE LFC AND FDR DETERMINED ABOVE)
 res.ALL <- results(dds.ALL, alpha=0.01, lfcThreshold=2, altHypothesis="greaterAbs")
 summary(res.ALL)
@@ -612,22 +540,9 @@ latex.columns <- "\\begin{tabular}{ L{8.5em} R{3.75em} R{3.75em} R{3.75em} R{3.7
 below.toprule <- "\\rowcolor{gray!25} & \\multicolumn{7}{ c }{\\textbf{\\# of genes at each filtering step}} \\\\\\hhline{>{\\arrayrulecolor{gray!25}}->{\\arrayrulecolor{black}}-------}"
 write.latex.table(filtering.table, latex.columns, below.toprule, paste0(tables.out.dir,"table.filtering",".tex"))
 
-
-## PLOT FILTERING TABLE!
-## data <- as.data.frame(t(filtering.table))
-
-## data <- data[which(row.names(data) != 'set'),]
-
-## ggplot(data, aes(x=variable,y=value,color=set)) +
-##     geom_line(aes(group=set)) +
-##     ylim=c(0,100)
-
-
-
 ## ------------------------------ CREATE LOG TRANSFORMATIONS AND VARIANCE STABILISING TRANSFORMATION
 
 rld.ALL <- rlog(ALL, blind=FALSE)
-
 
 rld.CASE.ARM <- rlog(CASE.ARM, blind=FALSE)
 rld.CASE.BACK <- rlog(CASE.BACK, blind=FALSE)
@@ -637,17 +552,6 @@ rld.SEVERE.BACK <- rlog(SEVERE.BACK, blind=FALSE)
 rld.MILD.ARM <- rlog(MILD.ARM, blind=FALSE)
 rld.MILD.BACK <- rlog(MILD.BACK, blind=FALSE)
 rld.SEVERE.MILD <- rlog(SEVERE.MILD, blind=FALSE)
-
-## vsd.ALL <- varianceStabilizingTransformation(dds.ALL, blind=FALSE)
-## vsd.CASE.ARM <- varianceStabilizingTransformation(dds.CASE.ARM, blind=FALSE)
-## vsd.CASE.BACK <- varianceStabilizingTransformation(dds.CASE.BACK, blind=FALSE)
-## vsd.CASE <- varianceStabilizingTransformation(dds.CASE, blind=FALSE)
-## vsd.SEVERE.ARM <- varianceStabilizingTransformation(dds.SEVERE.ARM, blind=FALSE)
-## vsd.SEVERE.BACK <- varianceStabilizingTransformation(dds.SEVERE.BACK, blind=FALSE)
-## vsd.MILD.ARM <- varianceStabilizingTransformation(dds.MILD.ARM, blind=FALSE)
-## vsd.MILD.BACK <- varianceStabilizingTransformation(dds.MILD.BACK, blind=FALSE)
-## vsd.SEVERE.MILD <- varianceStabilizingTransformation(dds.SEVERE.MILD, blind=FALSE)
-
 
 ## ------------------------------ GET DIFFERENTIALLY EXPRESSED RESULTS (FDR=0.05 or 5%, LOGFOLDCHANGE DEPENDS)
 
@@ -935,23 +839,6 @@ grid.arrange(volcano.CASE.BACK + ggtitle(title.CASE.BACK),
              )
 dev.off()
 
-
-
-
-## pdf(paste0(out.dir,'plot_volcano.pdf'), width = 11.69, height = 8.27, onefile=FALSE)
-## par(mfrow=c(3,3))
-## vp.ALL <- volcanoplot(results(dds.ALL), lfcthresh=2, sigthresh=0.01, textcx=.6, main=title.ALL)
-## vp.CASE.ARM <- volcanoplot(results(dds.CASE.ARM), lfcthresh=2, sigthresh=0.01, textcx=.6, main=title.CASE.ARM)
-## vp.CASE.BACK <- volcanoplot(results(dds.CASE.BACK), lfcthresh=2, sigthresh=0.01, textcx=.6, main=title.CASE.BACK)
-## vp.CASE <- volcanoplot(results(dds.CASE), lfcthresh=2, sigthresh=0.01, textcx=.6, main=title.CASE)
-## vp.SEVERE.ARM <- volcanoplot(results(dds.SEVERE.ARM), lfcthresh=2, sigthresh=0.01, textcx=.6, main=title.SEVERE.ARM)
-## vp.SEVERE.BACK <- volcanoplot(results(dds.SEVERE.BACK), lfcthresh=2, sigthresh=0.01, textcx=.6, main=title.SEVERE.BACK)
-## vp.MILD.ARM <- volcanoplot(results(dds.MILD.ARM), lfcthresh=2, sigthresh=0.01, textcx=.6, main=title.MILD.ARM)
-## vp.MILD.BACK <- volcanoplot(results(dds.MILD.BACK), lfcthresh=2, sigthresh=0.01, textcx=.6, main=title.MILD.BACK)
-## vp.SEVERE.MILD <- volcanoplot(results(dds.SEVERE.MILD), lfcthresh=2, sigthresh=0.01, textcx=.6, main=title.SEVERE.MILD)
-## dev.off()
-## par(mfrow=c(1,1))
-
 ## ===== PLOT HEATMAPS - ADD KNOWN TARGETS AND OTHER DESCRIPTIVE DATA TO THE HEATMAP
 ## Get the known targets and check how many of my data are targets
 ## https://www.targetvalidation.org/disease/EFO_0000717/associations?fcts=datatype:genetic_association;known_drug;literature
@@ -1023,31 +910,6 @@ rej.CASE <- plot_rejections_plot(res.CASE) #+ title(title.9)
 dev.off()
 par(mfrow = c(1, 1))
 
-## # The rlog and variance stabilizing transformations.
-## tr_p.1 <- plot_transformations(dds.1,rld.1,vsd.1) + ggtitle(title.1)
-## tr_p.2 <- plot_transformations(dds.2,rld.2,vsd.2) + ggtitle(title.2)
-## tr_p.3 <- plot_transformations(dds.3,rld.3,vsd.3) + ggtitle(title.3)
-## tr_p.4 <- plot_transformations(dds.4,rld.4,vsd.4) + ggtitle(title.4)
-## tr_p.5 <- plot_transformations(dds.5,rld.5,vsd.5) + ggtitle(title.5)
-## tr_p.6 <- plot_transformations(dds.6,rld.6,vsd.6) + ggtitle(title.6)
-## tr_p.7 <- plot_transformations(dds.7,rld.7,vsd.7) + ggtitle(title.7)
-## tr_p.8 <- plot_transformations(dds.8,rld.8,vsd.8) + ggtitle(title.8)
-## tr_p.9 <- plot_transformations(dds.9,rld.9,vsd.9) + ggtitle(title.9)
-
-## pdf(paste0(figures.out.dir,'plot_transformations.pdf'), width = 12, height = 7, onefile=FALSE)
-## grid.arrange(arrangeGrob(tr_p.1 + theme(legend.position = 'none'),
-##                          tr_p.2 + theme(legend.position = 'none'),
-##                          tr_p.3 + theme(legend.position = 'none'),
-##                          tr_p.4 + theme(legend.position = 'none'),
-##                          tr_p.5 + theme(legend.position = 'none'),
-##                          tr_p.6 + theme(legend.position = 'none'),
-##                          tr_p.7 + theme(legend.position = 'none'),
-##                          tr_p.8 + theme(legend.position = 'none'),
-##                          tr_p.9 + theme(legend.position = 'none'),
-##                          ncol=3,
-##                          nrow=3))
-## dev.off()
-
 ## # Boxplot.
 pdf(paste0(figures.out.dir,'plot_boxplot.pdf'), width = 12, height = 7, onefile=FALSE)
 par(mfrow = c(3, 3))
@@ -1062,50 +924,6 @@ b_p.8 <- plot_boxplots(dds.MILD.BACK, title.MILD.BACK)
 b_p.9 <- plot_boxplots(dds.SEVERE.MILD, title.SEVERE.MILD)
 dev.off()
 par(mfrow = c(1, 1))
-
-## # Dispersion Plot.
-## pdf(paste0(figures.out.dir,'plot_dispersion.pdf'), width = 12, height = 7, onefile=FALSE)
-## par(mfrow = c(3, 3))
-## plotDispEsts(dds.1, main=title.1)
-## plotDispEsts(dds.2, main=title.2)
-## plotDispEsts(dds.3, main=title.3)
-## plotDispEsts(dds.4, main=title.4)
-## plotDispEsts(dds.5, main=title.5)
-## plotDispEsts(dds.6, main=title.6)
-## plotDispEsts(dds.7, main=title.7)
-## plotDispEsts(dds.8, main=title.8)
-## plotDispEsts(dds.9, main=title.9)
-## dev.off()
-## par(mfrow = c(1, 1))
-
-## # Sample distance matrix.
-## pdf(paste0(figures.out.dir,'plot_distances.pdf'), width = 12, height = 7, onefile=TRUE)
-## par(mfrow = c(3,3))
-## dm_p.1 <- plot_distance_matrix(rld.1)
-## dm_p.2 <- plot_distance_matrix(rld.2)
-## dm_p.3 <- plot_distance_matrix(rld.3)
-## dm_p.4 <- plot_distance_matrix(rld.4)
-## dm_p.5 <- plot_distance_matrix(rld.5)
-## dm_p.6 <- plot_distance_matrix(rld.6)
-## dm_p.7 <- plot_distance_matrix(rld.7)
-## dm_p.8 <- plot_distance_matrix(rld.8)
-## dm_p.9 <- plot_distance_matrix(rld.9)
-## dev.off()
-## par(mfrow=c(1,1))
-
-## # MA plot.
-## pdf(paste0(figures.out.dir,'plot_MA.pdf'), width = 12, height =7, onefile=FALSE)
-## par(mfrow=c(3,3))
-## plotMA(res.1, ylim=c(-15,15)) + abline(h=c(0.5,-0.5),col="dodgerblue",lwd=1)
-## plotMA(res.2, ylim=c(-15,15)) + abline(h=c(0.5,-0.5),col="dodgerblue",lwd=1)
-## plotMA(res.3, ylim=c(-15,15)) + abline(h=c(0.5,-0.5),col="dodgerblue",lwd=1)
-## plotMA(res.4, ylim=c(-15,15)) + abline(h=c(0.5,-0.5),col="dodgerblue",lwd=1)
-## plotMA(res.5, ylim=c(-15,15)) + abline(h=c(0.5,-0.5),col="dodgerblue",lwd=1)
-## plotMA(res.6, ylim=c(-15,15)) + abline(h=c(0.5,-0.5),col="dodgerblue",lwd=1)
-## plotMA(res.7, ylim=c(-15,15)) + abline(h=c(0.5,-0.5),col="dodgerblue",lwd=1)
-## plotMA(res.8, ylim=c(-15,15)) + abline(h=c(0.5,-0.5),col="dodgerblue",lwd=1)
-## plotMA(res.9, ylim=c(-15,15)) + abline(h=c(0.5,-0.5),col="dodgerblue",lwd=1)
-## dev.off()
 
 ## ------------------------------ GET ENSEMBL BIOTYPES OF SIGNIFICANT GENES AFTER ANALYSES 
 
@@ -1192,66 +1010,9 @@ final_genes.hgnc <- unique(the_names[the_names$ensembl_id %in% final_genes.ensem
 final_genes.hgnc <- final_genes.hgnc[final_genes.hgnc != ""]
 write.csv(final_genes[,colnames(final_genes) %in% c("HGNC","NAME")], file=paste0(tables.out.dir,"final.gene.list.csv"), row.names=TRUE,col.names=TRUE)
 
-## ## Get LogFoldChange
-## the_table$ALL.fc <- res.ALL$log2FoldChange[match(row.names(the_table), row.names(res.ALL))]
-## the_table$CASE.ARM.fc <- res.CASE.ARM$log2FoldChange[match(row.names(the_table), row.names(res.CASE.ARM))]
-## the_table$CASE.BACK.fc <- res.CASE.BACK$log2FoldChange[match(row.names(the_table), row.names(res.CASE.ARM))]
-## the_table$CASE.fc <- res.CASE$log2FoldChange[match(row.names(the_table), row.names(res.CASE.BACK))]
-## the_table$SEVERE.ARM.fc <- res.SEVERE.ARM$log2FoldChange[match(row.names(the_table), row.names(res.SEVERE.ARM))]
-## the_table$SEVERE.BACK.fc <- res.SEVERE.BACK$log2FoldChange[match(row.names(the_table), row.names(res.SEVERE.BACK))]
-## the_table$MILD.ARM.fc <- res.MILD.ARM$log2FoldChange[match(row.names(the_table), row.names(res.MILD.ARM))]
-## the_table$MILD.BACK.fc <- res.MILD.BACK$log2FoldChange[match(row.names(the_table), row.names(res.MILD.BACK))]
-## the_table$SEVERE.MILD.fc <- res.SEVERE.MILD$log2FoldChange[match(row.names(the_table), row.names(res.SEVERE.MILD))]
-
-## ## Get Pvalues
-## the_table$ALL.pv <- res.ALL$pvalue[match(row.names(the_table), row.names(res.ALL))]
-## the_table$CASE.ARM.pv <- res.CASE.ARM$pvalue[match(row.names(the_table), row.names(res.CASE.ARM))]
-## the_table$CASE.BACK.pv <- res.CASE.BACK$pvalue[match(row.names(the_table), row.names(res.CASE.ARM))]
-## the_table$CASE.pv <- res.CASE$pvalue[match(row.names(the_table), row.names(res.CASE.BACK))]
-## the_table$SEVERE.ARM.pv <- res.SEVERE.ARM$pvalue[match(row.names(the_table), row.names(res.SEVERE.ARM))]
-## the_table$SEVERE.BACK.pv <- res.SEVERE.BACK$pvalue[match(row.names(the_table), row.names(res.SEVERE.BACK))]
-## the_table$MILD.ARM.pv <- res.MILD.ARM$pvalue[match(row.names(the_table), row.names(res.MILD.ARM))]
-## the_table$MILD.BACK.pv <- res.MILD.BACK$pvalue[match(row.names(the_table), row.names(res.MILD.BACK))]
-## the_table$SEVERE.MILD.pv <- res.SEVERE.MILD$pvalue[match(row.names(the_table), row.names(res.SEVERE.MILD))]
-
 the_table$ensembl <- row.names(the_table)
 
-#length(the_table$name)
 length(row.names(the_table))
-
-
-
-## Get -log10(pvalues)
-## the_table$ALL.lpv <- -log10(res.ALL$pvalue[match(row.names(the_table), row.names(res.ALL))])
-## the_table$CASE.ARM.lpv <- -log10(res.CASE.ARM$pvalue[match(row.names(the_table), row.names(res.CASE.ARM))])
-## the_table$CASE.BACK.lpv <- -log10(res.CASE.BACK$pvalue[match(row.names(the_table), row.names(res.CASE.ARM))])
-## the_table$CASE.lpv <- -log10(res.CASE$pvalue[match(row.names(the_table), row.names(res.CASE.BACK))])
-## the_table$SEVERE.ARM.lpv <- -log10(res.SEVERE.ARM$pvalue[match(row.names(the_table), row.names(res.SEVERE.ARM))])
-## the_table$SEVERE.BACK.lpv <- -log10(res.SEVERE.BACK$pvalue[match(row.names(the_table), row.names(res.SEVERE.BACK))])
-## the_table$MILD.ARM.lpv <- -log10(res.MILD.ARM$pvalue[match(row.names(the_table), row.names(res.MILD.ARM))])
-## the_table$MILD.BACK.lpv <- -log10(res.MILD.BACK$pvalue[match(row.names(the_table), row.names(res.MILD.BACK))])
-## the_table$SEVERE.MILD.lpv <- -log10(res.SEVERE.MILD$pvalue[match(row.names(the_table), row.names(res.SEVERE.MILD))])
-
-## the_table$ALL.lpv <- res.ALL$pvalue[match(row.names(the_table), row.names(res.ALL))]
-## the_table$CASE.ARM.lpv <- res.CASE.ARM$pvalue[match(row.names(the_table), row.names(res.CASE.ARM))]
-## the_table$CASE.BACK.lpv <- res.CASE.BACK$pvalue[match(row.names(the_table), row.names(res.CASE.ARM))]
-## the_table$CASE.lpv <- res.CASE$pvalue[match(row.names(the_table), row.names(res.CASE.BACK))]
-## the_table$SEVERE.ARM.lpv <- res.SEVERE.ARM$pvalue[match(row.names(the_table), row.names(res.SEVERE.ARM))]
-## the_table$SEVERE.BACK.lpv <- res.SEVERE.BACK$pvalue[match(row.names(the_table), row.names(res.SEVERE.BACK))]
-## the_table$MILD.ARM.lpv <- res.MILD.ARM$pvalue[match(row.names(the_table), row.names(res.MILD.ARM))]
-## the_table$MILD.BACK.lpv <- res.MILD.BACK$pvalue[match(row.names(the_table), row.names(res.MILD.BACK))]
-## the_table$SEVERE.MILD.lpv <- res.SEVERE.MILD$pvalue[match(row.names(the_table), row.names(res.SEVERE.MILD))]
-
-## ## Get Adjusted Pvalues
-## the_table$ALL.padj <- res.ALL$padj[match(row.names(the_table), row.names(res.ALL))]
-## the_table$CASE.ARM.padj <- res.CASE.ARM$padj[match(row.names(the_table), row.names(res.CASE.ARM))]
-## the_table$CASE.BACK.padj <- res.CASE.BACK$padj[match(row.names(the_table), row.names(res.CASE.ARM))]
-## the_table$CASE.padj <- res.CASE$padj[match(row.names(the_table), row.names(res.CASE.BACK))]
-## the_table$SEVERE.ARM.padj <- res.SEVERE.ARM$padj[match(row.names(the_table), row.names(res.SEVERE.ARM))]
-## the_table$SEVERE.BACK.padj <- res.SEVERE.BACK$padj[match(row.names(the_table), row.names(res.SEVERE.BACK))]
-## the_table$MILD.ARM.padj <- res.MILD.ARM$padj[match(row.names(the_table), row.names(res.MILD.ARM))]
-## the_table$MILD.BACK.padj <- res.MILD.BACK$padj[match(row.names(the_table), row.names(res.MILD.BACK))]
-## the_table$SEVERE.MILD.padj <- res.SEVERE.MILD$padj[match(row.names(the_table), row.names(res.SEVERE.MILD))]
 
 ## REMOVE NA'S AND ADD 0 INSTEAD
 the_table[is.na(the_table)] <- 0
@@ -1427,28 +1188,6 @@ enriched.MILD.ARM <- enrichr(unique(genes.MILD.ARM$HGNC[genes.MILD.ARM$HGNC != "
 enriched.MILD.BACK <- enrichr(unique(genes.MILD.BACK$HGNC[genes.MILD.BACK$HGNC != ""]), dbs)
 enriched.SEVERE.MILD <- enrichr(unique(genes.SEVERE.MILD$HGNC[genes.SEVERE.MILD$HGNC != ""]), dbs)
 
-## ## UP ENRICHED
-## enriched.up.ALL <- enrichr(unique(up.ALL$HGNC[up.ALL$HGNC != ""]), dbs)
-## enriched.up.CASE.ARM <- enrichr(unique(up.CASE.ARM$HGNC[up.CASE.ARM$HGNC != ""]), dbs)
-## enriched.up.CASE.BACK <- enrichr(unique(up.CASE.BACK$HGNC[up.CASE.BACK$HGNC != ""]), dbs)
-## enriched.up.CASE <- enrichr(unique(up.CASE$HGNC[up.CASE$HGNC != ""]), dbs)
-## enriched.up.SEVERE.ARM <- enrichr(unique(up.SEVERE.ARM$HGNC[up.SEVERE.ARM$HGNC != ""]), dbs)
-## enriched.up.SEVERE.BACK <- enrichr(unique(up.SEVERE.BACK$HGNC[up.SEVERE.BACK$HGNC != ""]), dbs)
-## enriched.up.MILD.ARM <- enrichr(unique(up.MILD.ARM$HGNC[up.MILD.ARM$HGNC != ""]), dbs)
-## enriched.up.MILD.BACK <- enrichr(unique(up.MILD.BACK$HGNC[up.MILD.BACK$HGNC != ""]), dbs)
-## enriched.up.SEVERE.MILD <- enrichr(unique(up.SEVERE.MILD$HGNC[up.SEVERE.MILD$HGNC != ""]), dbs)
-
-## ## DOWN ENRICHED
-## enriched.down.ALL <- enrichr(unique(down.ALL$HGNC[down.ALL$HGNC != ""]), dbs)
-## enriched.down.CASE.ARM <- enrichr(unique(down.CASE.ARM$HGNC[down.CASE.ARM$HGNC != ""]), dbs)
-## enriched.down.CASE.BACK <- enrichr(unique(down.CASE.BACK$HGNC[down.CASE.BACK$HGNC != ""]), dbs)
-## enriched.down.CASE <- enrichr(unique(down.CASE$HGNC[down.CASE$HGNC != ""]), dbs)
-## enriched.down.SEVERE.ARM <- enrichr(unique(down.SEVERE.ARM$HGNC[down.SEVERE.ARM$HGNC != ""]), dbs)
-## enriched.down.SEVERE.BACK <- enrichr(unique(down.SEVERE.BACK$HGNC[down.SEVERE.BACK$HGNC != ""]), dbs)
-## enriched.down.MILD.ARM <- enrichr(unique(down.MILD.ARM$HGNC[down.MILD.ARM$HGNC != ""]), dbs)
-## enriched.down.MILD.BACK <- enrichr(unique(down.MILD.BACK$HGNC[down.MILD.BACK$HGNC != ""]), dbs)
-## enriched.down.SEVERE.MILD <- enrichr(unique(down.SEVERE.MILD$HGNC[down.SEVERE.MILD$HGNC != ""]), dbs)
-
 put_enrichment_into_files <- function(set) {
     set.name <- deparse(substitute(set))
     set.name <- substr(set.name,10,nchar(set.name))
@@ -1475,26 +1214,6 @@ put_enrichment_into_files(enriched.SEVERE.BACK)
 put_enrichment_into_files(enriched.MILD.ARM)
 put_enrichment_into_files(enriched.MILD.BACK)
 put_enrichment_into_files(enriched.SEVERE.MILD)
-
-## put_enrichment_into_files(enriched.up.ALL)
-## put_enrichment_into_files(enriched.up.CASE.ARM)
-## put_enrichment_into_files(enriched.up.CASE.BACK)
-## put_enrichment_into_files(enriched.up.CASE)
-## put_enrichment_into_files(enriched.up.SEVERE.ARM)
-## put_enrichment_into_files(enriched.up.SEVERE.BACK)
-## put_enrichment_into_files(enriched.up.MILD.ARM)
-## put_enrichment_into_files(enriched.up.MILD.BACK)
-## put_enrichment_into_files(enriched.up.SEVERE.MILD)
-
-## put_enrichment_into_files(enriched.down.ALL)
-## put_enrichment_into_files(enriched.down.CASE.ARM)
-## put_enrichment_into_files(enriched.down.CASE.BACK)
-## put_enrichment_into_files(enriched.down.CASE)
-## put_enrichment_into_files(enriched.down.SEVERE.ARM)
-## put_enrichment_into_files(enriched.down.SEVERE.BACK)
-## put_enrichment_into_files(enriched.down.MILD.ARM)
-## put_enrichment_into_files(enriched.down.MILD.BACK)
-## put_enrichment_into_files(enriched.down.SEVERE.MILD)
 
 ## ATTEMPT AT VISUALIZING GO TERMS
 
@@ -1565,10 +1284,6 @@ go.cell.ARMS <- plot.enrichr(enriched.ARMS,"GO_Cellular_Component_2018")
 WIKI.ARMS <- plot.enrichr(enriched.ARMS,"WikiPathways_2016")
 KEGG.ARMS <- plot.enrichr(enriched.ARMS,"KEGG_2016")
 REACTOME.ARMS <- plot.enrichr(enriched.ARMS,"Reactome_2016")
-#.MILD.ARM <- plot.enrichr(enriched.MILD.ARM,"WikiPathways_2016")
-#WIKI.MILD.BACK <- plot.enrichr(enriched.MILD.BACK,"WikiPathways_2016")
-#WIKI.SEVERE.MILD <- plot.enrichr(enriched.SEVERE.MILD,"WikiPathways_2016")
-## PLOT ALL IN ONE PAGE  
 pdf(paste0(figures.out.dir,'enrichment.plot.ARMS_Terms.pdf'), paper='a4', width = 0, height = 0, onefile=FALSE)
 grid.arrange(go.biol.ARMS + ggtitle("GO Biological Process 2018"),
              go.mol.ARMS + ggtitle("GO Molecular Function 2018"),
@@ -1595,9 +1310,7 @@ go.cell.ALL.COMBINED <- plot.enrichr(enriched.ALL.COMBINED,"GO_Cellular_Componen
 WIKI.ALL.COMBINED <- plot.enrichr(enriched.ALL.COMBINED,"WikiPathways_2016")
 KEGG.ALL.COMBINED <- plot.enrichr(enriched.ALL.COMBINED,"KEGG_2016")
 REACTOME.ALL.COMBINED <- plot.enrichr(enriched.ALL.COMBINED,"Reactome_2016")
-#.MILD.ARM <- plot.enrichr(enriched.MILD.ARM,"WikiPathways_2016")
-#WIKI.MILD.BACK <- plot.enrichr(enriched.MILD.BACK,"WikiPathways_2016")
-#WIKI.SEVERE.MILD <- plot.enrichr(enriched.SEVERE.MILD,"WikiPathways_2016")
+
 ## PLOT ALL IN ONE PAGE  
 pdf(paste0(figures.out.dir,'enrichment.plot.COMBINED_Terms.pdf'), paper='a4', width = 0, height = 0, onefile=FALSE)
 grid.arrange(go.biol.ALL.COMBINED + ggtitle("GO Biological Process 2018"),
@@ -1796,8 +1509,8 @@ dev.off()
 ## Map ENSEMBL IDs to Entrez for pathway analysis
 ## Order by P-value
 
-## detach("package:PROPER", unload=TRUE)
-## detach("package:MASS", unload=TRUE)
+## Detach the PROPRER PACKAGE - INTERFERES WITH PATHWAY ANALYSIS
+detach("package:PROPER", unload=TRUE)
 
 data(kegg.sets.hs)
 data(sigmet.idx.hs)
@@ -1939,9 +1652,8 @@ do_pathway(res.MILD.ARM)
 do_pathway(res.MILD.BACK)
 do_pathway(res.SEVERE.MILD)
 
+library(PROPER)
 
 ## write(utils::toLatex(sessionInfo()), file=paste0(out.dir,"session.info.tex"))
 ## write(sessioninfo::session_info(), file="session.info.tex")
-
-
 ## clipr::write_clip(sessioninfo::session_info())
