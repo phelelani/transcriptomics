@@ -233,6 +233,14 @@ if (file.exists(path.out.dir)){
     dir.create(file.path(path.out.dir), showWarnings = TRUE)
 }
 
+## KEGG DOWNLOADED PATHWAYS
+kegg.out.dir <- paste0(out.dir, "pathways/kegg_downloads/")
+if (file.exists(kegg.out.dir)){
+    system(paste0('rm -r ','"',kegg.out.dir,'"',"*"))
+}else {
+    dir.create(file.path(kegg.out.dir), showWarnings = TRUE)
+}
+
 ## PROPER POWER CALCULATIONS
 sim.opts.Cheung <- RNAseq.SimOptions.2grp(ngenes = 25000,
                                           p.DE=0.05, lOD="cheung",
@@ -1632,7 +1640,7 @@ do_pathway <- function(res) {
     sapply(keggresids, function(pid) pathview(gene.data=foldchanges,
                                               pathway.id=pid,
                                               species="hsa" ,
-                                              kegg.dir = "kegg_downloads",
+                                              kegg.dir = kegg.out.dir,
                                               limit = list(gene = 10, cpd = 10),
                                               out.suffix = paste0(gsub(' ','.',keggresnames.table$names[match(pid, row.names(keggresnames.table))]),"_",path.name)
                                               )
