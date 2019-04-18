@@ -5,7 +5,7 @@
 git clone https://github.com/phelelani/transcriptomics.git
 ```
 
-### Download or build singularity image
+### Download or build singularity image:
 ```
 ## To download:
 singularity pull --name "R.simg" shub://phelelani/transcriptomics:r
