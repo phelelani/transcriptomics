@@ -1,17 +1,17 @@
-## Differential Expression and Pathway analysis R script
+## Differential expression and pathway analysis R script
 
-### Clone Repository:
+### Clone repository:
 ```
 git clone https://github.com/phelelani/transcriptomics.git
 ```
 
-### Download/build singularity image
+### Download or build singularity image
 ```
-## Download
+## To download:
 singularity pull --name "R.simg" shub://phelelani/transcriptomics:r
 mv R.simg containers/
 
-## Build
+## To build:
 sudo singularity build containers/R.simg containers/Singularity.R
 ```
 
