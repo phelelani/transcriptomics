@@ -9,7 +9,7 @@ Maintainer Phelelani.Mpangase@wits.ac.za
 apt-get update
 apt-get install -y build-essential
 apt-get install -y wget git curl gfortran zlib1g-dev libbz2-dev liblzma-dev libpcre3-dev libcurl4-gnutls-dev
-apt-get install -y libxml2-dev libssl-dev libopenblas-dev libmagick++-dev libudunits2-dev
+apt-get install -y libxml2-dev libssl-dev libopenblas-dev libmagick++-dev libudunits2-dev libcairo2-dev libxt-dev
 
 ## Install R
 cd /opt \
@@ -22,7 +22,7 @@ cd /opt \
     && rm /opt/R-3.5.1.tar.gz
 
 ## Install basic CRAN R packages
-R -e 'install.packages(c("tidyverse","data.table","dtplyr","devtools","roxygen2"), repos="http://cloud.r-project.org/", dependencies=TRUE)'
+R -e 'install.packages(c("tidyverse","data.table","dtplyr","devtools","roxygen2", "Cairo"), repos="http://cloud.r-project.org/", dependencies=TRUE)'
 
 ## Install CRAN R packages
 R -e 'install.packages(c("ggplot2", "gridExtra", "ggrepel", "xtable", "gplots", "kableExtra", "grid", "pheatmap", "enrichR", "BiocManager", "UpSetR", "PoiClaClu"), repos="http://cloud.r-project.org/", dependencies=TRUE)'

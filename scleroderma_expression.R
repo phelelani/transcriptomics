@@ -1650,15 +1650,15 @@ do_pathway <- function(res) {
     system(paste0('mv *',path.name,".png ",'"',path.out.dir,'"'))
 }
 
-do_pathway(res.ALL)
-do_pathway(res.CASE.ARM)
-do_pathway(res.CASE.BACK)
-do_pathway(res.CASE)
-do_pathway(res.SEVERE.ARM)
-do_pathway(res.SEVERE.BACK)
-do_pathway(res.MILD.ARM)
-do_pathway(res.MILD.BACK)
-do_pathway(res.SEVERE.MILD)
+try(do_pathway(res.ALL), TRUE)
+try(do_pathway(res.CASE.ARM), TRUE)
+try(do_pathway(res.CASE.BACK), TRUE)
+try(do_pathway(res.CASE), TRUE)
+try(do_pathway(res.SEVERE.ARM), TRUE)
+try(do_pathway(res.SEVERE.BACK), TRUE)
+try(do_pathway(res.MILD.ARM), TRUE)
+try(do_pathway(res.MILD.BACK), TRUE)
+try(do_pathway(res.SEVERE.MILD), TRUE)
 
 library(PROPER)
 
